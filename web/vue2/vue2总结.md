@@ -1,3 +1,27 @@
+## 响应式原理
+
+- [参考](https://www.jianshu.com/p/d137fbdc06ff)
+
+- [原理图](https://gitee.com/bushanjiangzi/notes/blob/master/web/vue2/vue2%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/img/%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86.png)
+
+- 核心
+
+  1. observe(data)：当你把一个普通的 JavaScript 对象传入 Vue 实例作为 data 选项，Vue 将遍历此对象所有的 property；
+
+  2. defineProperty(data,key,handler）：将遍历完的 property 使用 Object.defineProperty 把这些 property 全部转为 getter/setter。Object.defineProperty 是 ES5 中一个无法 shim 的特性，这也就是 Vue 不支持 IE8 以及更低版本浏览器的原因。getter/setter 就是做订阅-发布处理（依赖收集与派发更新），就是在属性被调用的使用，触发 get 代理函数，订阅调用该属性的组件(将组件存放到一个订阅者数组中进行保存，这里的 Dep.target 暂时可以理解为一个全局变量，代表着的是当前正在渲染的 Vue 组件)。 而在属性被修改时，触发 set 代理函数，在 set 代理函数里，通知订阅者数组里面的每一个订阅者（组件）进行视图更新。
+
+  3. Dep：是一个依赖类，将它理解成一个订阅者。当对一个属性进行响应式处理的时候，就会实例化一个 Dep 实例，并将用到这个属性的组件全部存放在 subs 数组里。当属性被修改时，则通知 subs 数组里的所有组件进行更新。
+
+  4. Watcher：getter/setter 对用户来说是不可见的，但是在内部它们让 Vue 能够追踪依赖，在 property 被访问和修改时通知变更。每个组件实例都对应一个 watcher 实例，它会在组件渲染的过程中把“接触”过的数据 property 记录为依赖。之后当依赖项的 setter 触发时，会通知 watcher，从而使它关联的组件重新渲染。（等这些属性进行被修改时，就会通知这个 watcher，再次调用这个 watcher 里面的 render 函数，进行虚拟 dom 的 diff 和更新）
+
+- vue2 响应式不足之处
+
+  1. 动态添加响应式属性必须用 Vue.set
+
+  2. 直接操作数组索引无法触发视图更新
+
+  3. 数据的响应式处理和视图未完全解耦
+
 ## 全局 API
 
 - Vue.use(plugins) 注册一个插件
@@ -166,25 +190,3 @@
     }
   }
   ```
-
-## 响应式原理
-
-[参考](https://www.jianshu.com/p/d137fbdc06ff)
-
-[原理图](https://gitee.com/bushanjiangzi/notes/blob/master/web/vue2/vue2%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/img/%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86.png)
-
-1. observe(data)：当你把一个普通的 JavaScript 对象传入 Vue 实例作为 data 选项，Vue 将遍历此对象所有的 property；
-
-2. defineProperty(data,key,handler）：将遍历完的 property 使用 Object.defineProperty 把这些 property 全部转为 getter/setter。Object.defineProperty 是 ES5 中一个无法 shim 的特性，这也就是 Vue 不支持 IE8 以及更低版本浏览器的原因。getter/setter 就是做订阅-发布处理（依赖收集与派发更新），就是在属性被调用的使用，触发 get 代理函数，订阅调用该属性的组件(将组件存放到一个订阅者数组中进行保存，这里的 Dep.target 暂时可以理解为一个全局变量，代表着的是当前正在渲染的 Vue 组件)。 而在属性被修改时，触发 set 代理函数，在 set 代理函数里，通知订阅者数组里面的每一个订阅者（组件）进行视图更新。
-
-3. Dep：是一个依赖类，将它理解成一个订阅者。当对一个属性进行响应式处理的时候，就会实例化一个 Dep 实例，并将用到这个属性的组件全部存放在 subs 数组里。当属性被修改时，则通知 subs 数组里的所有组件进行更新。
-
-4. Watcher：getter/setter 对用户来说是不可见的，但是在内部它们让 Vue 能够追踪依赖，在 property 被访问和修改时通知变更。每个组件实例都对应一个 watcher 实例，它会在组件渲染的过程中把“接触”过的数据 property 记录为依赖。之后当依赖项的 setter 触发时，会通知 watcher，从而使它关联的组件重新渲染。（等这些属性进行被修改时，就会通知这个 watcher，再次调用这个 watcher 里面的 render 函数，进行虚拟 dom 的 diff 和更新）
-
-**vue2 响应式不足之处**
-
-1. 动态添加响应式属性必须用 Vue.set
-
-2. 直接操作数组索引无法触发视图更新
-
-3. 数据的响应式处理和视图未完全解耦
