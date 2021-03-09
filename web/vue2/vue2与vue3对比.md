@@ -1,6 +1,6 @@
 ## 响应式原理
 
-[vue2 响应式原理请看](上一章)
+[vue2 响应式原理请看](https://gitee.com/bushanjiangzi/notes/blob/master/web/vue2/vue2%E6%80%BB%E7%BB%93.md)
 
 **Vue3.0 响应式原理核心步骤**
 [详解](https://zhuanlan.zhihu.com/p/176813790)
