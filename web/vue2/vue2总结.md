@@ -2,7 +2,7 @@
 
 - [参考](https://www.jianshu.com/p/d137fbdc06ff)
 
-- ![原理图](https://gitee.com/bushanjiangzi/notes/blob/master/web/vue2/vue2%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/img/%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86.png)
+- ![原理图](./vue2源码解析/img/响应式原理.png)
 
 - 核心
 
@@ -16,7 +16,9 @@
 
 - vue2 响应式不足之处
 
-  1. 动态添加响应式属性必须用 Vue.set
+  1. 动态添加响应式属性必须用 Vue.set;
+  > 对像：对于已经创建的实例，Vue 不允许动态添加根级别的响应式 property。但是，可以使用 Vue.set(object, propertyName, value) 方法向嵌套对象添加响应式 property；
+  > 数组：当你利用索引直接设置一个数组项时，例如：vm.items[indexOfItem] = newValue，通过`Vue.set(vm.items, indexOfItem, newValue)`解决；当你修改数组的长度时，例如：vm.items.length = lewLength；通过`vm.items.splice(newLength)`解决
 
   2. 直接操作数组索引无法触发视图更新
 
@@ -79,7 +81,7 @@
   </template>
   ```
 
-- Vue.nextTick([callback,context]) 在 DOM 更新之后调用回调函数
+- `Vue.nextTick([callback, context])` 在 DOM 更新之后调用回调函数
 
   ```
   //全局
