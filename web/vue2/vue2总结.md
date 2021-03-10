@@ -2,7 +2,7 @@
 
 - [参考](https://www.jianshu.com/p/d137fbdc06ff)
 
-- [原理图](https://gitee.com/bushanjiangzi/notes/blob/master/web/vue2/vue2%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/img/%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86.png)
+- ![原理图](https://gitee.com/bushanjiangzi/notes/blob/master/web/vue2/vue2%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/img/%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86.png)
 
 - 核心
 
