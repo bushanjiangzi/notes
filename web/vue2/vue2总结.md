@@ -16,9 +16,10 @@
 
 - vue2 响应式不足之处
 
-  1. 动态添加响应式属性必须用 Vue.set;
-  > 对像：对于已经创建的实例，Vue 不允许动态添加根级别的响应式 property。但是，可以使用 Vue.set(object, propertyName, value) 方法向嵌套对象添加响应式 property；
-  > 数组：当你利用索引直接设置一个数组项时，例如：vm.items[indexOfItem] = newValue，通过`Vue.set(vm.items, indexOfItem, newValue)`解决；当你修改数组的长度时，例如：vm.items.length = lewLength；通过`vm.items.splice(newLength)`解决
+  1. 动态添加响应式属性必须用 Vue.set();
+
+     > 对像：对于已经创建的实例，Vue 不允许动态添加根级别的响应式 property。但是，可以使用 Vue.set(object, propertyName, value) 方法向嵌套对象添加响应式 property；
+     > 数组：当你利用索引直接设置一个数组项时，例如：vm.items[indexOfItem] = newValue，通过`Vue.set(vm.items, indexOfItem, newValue)`解决；当你修改数组的长度时，例如：vm.items.length = lewLength；通过`vm.items.splice(newLength)`解决
 
   2. 直接操作数组索引无法触发视图更新
 
@@ -192,3 +193,100 @@
     }
   }
   ```
+
+## v-model 原理
+
+- v-model 本质上就是语法糖
+  ```
+  let vm = new Vue({
+    el: '#app',
+    template: `
+      <div>
+        <p>Message is {{ message }</p>}
+        <input v-model="message" placeholder="edit me">
+        <!-- <input :value="message=$event.target.value" placeholder="语法糖"> -->
+      </div>
+    `,
+    data() {
+      return {
+        message: ''
+      }
+    }
+  })
+  ```
+- 组件级别上的应用，这里的 lovingVue 的值将会传入这个名为 checked 的 prop。同时当 <base-checkbox> 触发一个 change 事件并附带一个新的值的时候，这个 lovingVue 的 property 将会被更新。
+
+  ```
+  // 父组件
+  <base-checkbox v-model="lovingVue"></base-checkbox>
+
+  // 子组件
+  Vue.component('base-checkbox', {
+    model: {
+      prop: 'checked',
+      event: 'change'
+    },
+    props: {
+      checked: Boolean
+    },
+    template: `
+      <input
+        type="checkbox"
+        v-bind:checked="checked"
+        v-on:change="$emit('change', $event.target.checked)"
+      >
+    `
+  })
+  ```
+
+## 高阶组件
+
+- 所谓高阶组件其实就是高阶函数，React 和 Vue 都证明了一件事儿：一个函数就是一个组件。所以组件是函数这个命题成立了，那高阶组件很自然的就是高阶函数，即一个返回函数的函数
+
+  ```
+  // 防抖函数
+  function debounce (func, delay, context, event) {
+    clearTimeout(func.timer)
+    func.timer = setTimeout(function () {
+      func.call(context, event)
+    }, delay)
+  }
+  // 导出新组件
+  export default {
+    props: {},
+    name: 'ButtonHoc',
+    data () {
+      return {}
+    },
+    mounted () {
+      console.log('HOC succeed')
+    },
+    methods: {
+      handleClickLink (event) {
+        let that = this
+        console.log('debounce')
+        // that.$listeners.click为绑定在新组件上的click函数
+        debounce(that.$listeners.click, 300, that, event)
+      }
+    },
+    render (h) {
+      const slots = Object.keys(this.$slots)
+        .reduce((arr, key) => arr.concat(this.$slots[key]), [])
+        .map(vnode => {
+          vnode.context = this._self
+          return vnode
+        })
+      return h('Button', {
+        on: {
+          click: this.handleClickLink //新组件绑定click事件
+        },
+        props: this.$props,
+        // 透传 scopedSlots
+        scopedSlots: this.$scopedSlots,
+        attrs: this.$attrs
+      }, slots)
+    }
+  }
+  ```
+
+- 总结:HOC 的特点在于它的包裹性，上列源码我们做了这些操作，来实现包裹 iview 的 Button 组件，劫持 click 事件，（1）创建 debounce 防抖函数，导出新组件，render 渲染出 iview button,button 绑定 debounce 后的 click 方法。
