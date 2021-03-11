@@ -290,3 +290,86 @@
   ```
 
 - 总结:HOC 的特点在于它的包裹性，上列源码我们做了这些操作，来实现包裹 iview 的 Button 组件，劫持 click 事件，（1）创建 debounce 防抖函数，导出新组件，render 渲染出 iview button,button 绑定 debounce 后的 click 方法。
+
+## vue组件之间通信
+
+  1. props和$emit(常用)
+
+    > 父组件向子组件传递数据是通过prop传递的，子组件传递数据给父组件是通过$emit触发事件来做到的
+    ```
+    <child :message="message" v-on:getChildData="getChildData"></child>
+    props:['message']
+    this.$emit('getChildData',val)
+    ```
+  2. $attrs和$listeners
+
+    > A > B > C
+
+    ```
+    // A组件
+    <B :messagec="messagec" :message="message" v-on:getCData="getCData" v-on:getChildData="getChildData(message)"></B>
+    // B组件；C组件中能直接触发getCData的原因在于 B组件调用C组件时 使用 v-on 绑定了$listeners 属性；
+    // 通过v-bind 绑定$attrs属性，C组件可以直接获取到A组件中传递下来的props（除了B组件中props声明的)
+    <C v-bind="$attrs" v-on="$listeners"></C>
+    // C组件
+    <input type="text" v-model="$attrs.messagec" @input="passCData($attrs.messagec)"> </div>
+    ```
+
+  3. 中央事件总线Bus（非父子组件间通信）
+
+    > 上面两种方式处理的都是父子组件之间的数据传递，而如果两个组件不是父子关系呢？这种情况下可以使用中央事件总线的方式。新建一个Vue事件bus对象，然后通过bus.$emit触发事件，bus.$on监听触发的事件。
+
+    ```
+    var bus=new Vue()
+    bus.$emit('globalEvent',val)
+    bus.$on('globalEvent', (val)=> {
+      ...
+    })
+    ```
+
+  4. v-model
+
+    > 父组件通过v-model传递值给子组件时，会自动传递一个value的prop属性，在子组件中通过this.$emit(‘input',val)自动修改v-model绑定的值
+
+    ```
+    // parent
+    <child v-model="message"></child>
+
+    // child
+    props: {
+      value: String, //v-model会自动传递一个字段为value的prop属性
+    }
+    this.$emit('input',this.mymessage)
+    ```
+
+  5. provide和inject
+
+    > 成对出现，用于父级组件向下传递数据
+
+    > 父组件中通过provider来提供变量，然后在子组件中通过inject来注入变量。不论子组件有多深，只要调用了inject那么就可以注入provider中的数据。而不是局限于只能从当前父组件的prop属性来获取数据，只要在父组件的生命周期内，子组件都可以调用。
+
+    ```
+    // parent
+    provide:{
+      for:'test'
+    }
+
+    // child
+    inject:['for'] // 得到父组件传递过来的数据
+    ```
+
+  6. $parent和$children
+
+    > 在组件内部可以直接通过子组件$parent对父组件进行操作，父组件通过$children对子组件进行操作
+
+    ```
+    // parent
+    <child></child>
+    this.$children[0].childMessage = 'hello'
+
+    // child
+    this.$parent.message = this.childMessage // 通过如此调用可以改变父组件的值
+    ```
+  7. vuex
+
+    > 如果业务逻辑复杂，很多组件之间需要同时处理一些公共的数据，这个时候才有上面这一些方法可能不利于项目的维护，vuex的做法就是将这一些公共的数据抽离出来，然后其他组件就可以对这个公共数据进行读写操作，这样达到了解耦的目的。
