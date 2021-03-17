@@ -373,3 +373,51 @@
   7. vuex
 
     > 如果业务逻辑复杂，很多组件之间需要同时处理一些公共的数据，这个时候才有上面这一些方法可能不利于项目的维护，vuex的做法就是将这一些公共的数据抽离出来，然后其他组件就可以对这个公共数据进行读写操作，这样达到了解耦的目的。
+
+
+## 动态组件 & 异步组件
+
+- keep-alive：希望某些标签的组件实例能够被在它们第一次被创建的时候缓存下来，include - 字符串或正则表达式。只有名称匹配的组件会被缓存。exclude - 字符串或正则表达式。任何名称匹配的组件都不会被缓存。max - 数字。最多可以缓存多少组件实例。
+```
+<!-- 失活的组件将会被缓存！-->
+<keep-alive>
+  <component v-bind:is="currentTabComponent"></component>
+</keep-alive>
+```
+
+- 异步组件：在大型应用中，我们可能需要将应用分割成小一些的代码块，并且只在需要的时候才从服务器加载一个模块。为了简化，Vue 允许你以一个工厂函数的方式定义你的组件，这个工厂函数会异步解析你的组件定义。Vue 只有在这个组件需要被渲染的时候才会触发该工厂函数，且会把结果缓存起来供未来重渲染。
+```
+// 定义
+Vue.component('async-example', function (resolve, reject) {
+  setTimeout(function () {
+    // 向 `resolve` 回调传递组件定义
+    resolve({
+      template: '<div>I am async!</div>'
+    })
+  }, 1000)
+})
+
+// 引入
+new Vue({
+  components: {
+    'my-component': () => import('./my-async-component')
+  }
+})
+```
+
+- 异步组件-处理加载状态：工厂函数也可以返回一个如下格式的对象：
+```
+const AsyncComponent = () => ({
+  // 需要加载的组件 (应该是一个 `Promise` 对象)
+  component: import('./MyComponent.vue'),
+  // 异步组件加载时使用的组件
+  loading: LoadingComponent,
+  // 加载失败时使用的组件
+  error: ErrorComponent,
+  // 展示加载时组件的延时时间。默认值是 200 (毫秒)
+  delay: 200,
+  // 如果提供了超时时间且组件加载也超时了，
+  // 则使用加载失败时使用的组件。默认值是：`Infinity`
+  timeout: 3000
+})
+```
