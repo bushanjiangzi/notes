@@ -1,3 +1,7 @@
+## Vue Function-based API RFC 
+  
+  - [Vue Function-based API RFC](https://zhuanlan.zhihu.com/p/68477600)
+
 ## 响应式原理
 
 [vue2 响应式原理请看](https://gitee.com/bushanjiangzi/notes/blob/master/web/vue2/vue2%E6%80%BB%E7%BB%93.md)
