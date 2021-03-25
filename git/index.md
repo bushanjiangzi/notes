@@ -53,3 +53,5 @@ git pull github
 # 从gitee拉取更新
 git pull gitee
 ```
+## 修改链接地址
+ `git remote set-url origin url`
