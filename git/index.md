@@ -53,3 +53,15 @@ git pull github
 # 从gitee拉取更新
 git pull gitee
 ```
+
+## 其他命令
+	
+- `git branch` - 查看所有分支
+
+- `git checkout v2` - 切换分支
+
+- `git merge master` - 合并master分支到当前分支
+
+- `git branch -a` - 查看本地及远程仓库所有分支
+
+- `git branch -r` - 查看远程仓库所有分支
