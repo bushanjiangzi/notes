@@ -65,3 +65,5 @@ git pull gitee
 - `git branch -a` - 查看本地及远程仓库所有分支
 
 - `git branch -r` - 查看远程仓库所有分支
+
+- `git remote set-url origin url` - 修改链接地址
