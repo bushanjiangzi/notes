@@ -58,7 +58,7 @@ git pull gitee
 
 - `git branch` - 查看所有分支
 
-- `git branch xxx` - 新建本地分支
+- `git branch xxx` - 新建本地分支`xxx`
 
 - `git checkout v2` - 切换分支
 
