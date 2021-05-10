@@ -70,6 +70,6 @@ git pull gitee
 
 - `git remote set-url origin url` - 修改链接地址
 
-##
+## 记住 gitee 账号和密码，每次提交不需再输入账号和密码
 
 `git config --global credential.helper store`
