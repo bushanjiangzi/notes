@@ -410,5 +410,7 @@
   2. 通过 query
 
   > > `<Link to={{ path : ' /sort ' , query : { name : 'sunny' }}}>`;
+
   > > `this.props.history.push({ path : '/sort' ,query : { name: ' sunny'} })`
+
   > > 取参数：`this.props.location.query.name`
