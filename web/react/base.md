@@ -380,6 +380,7 @@
 ### 路由
 
 - App.js
+
   ```
   class App extends Component {
     render() {
@@ -399,18 +400,19 @@
     }
   }
   ```
+
 - 路由传参
 
   1. 通过 params
 
-     > 在标签中传: `<Route path='/detail/:id' exact component={Detail}></Route>`;获取参数`this.props.match.params.id`
+  > 在标签中传: `<Route path='/detail/:id' exact component={Detail}></Route>`;获取参数`this.props.match.params.id`
 
-     > js: this.props.history.push( '/sort/' + id )
+  > js: this.props.history.push( '/sort/' + id )
 
   2. 通过 query
 
-     > `<Link to={{ path : ' /sort ' , query : { name : 'sunny' }}}>`;
+  > 标签方式：`<Link to={{ path : ' /sort ' , query : { name : 'sunny' }}}>`;
 
-     > `this.props.history.push({ path : '/sort' ,query : { name: ' sunny'} })`
+  > js 方式：`this.props.history.push({ path : '/sort' ,query : { name: ' sunny'} })`
 
-     > 取参数：`this.props.location.query.name`
+  > 取参数：`this.props.location.query.name`
