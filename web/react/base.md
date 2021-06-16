@@ -23,6 +23,148 @@
 
 ### redux 中间件
 
+- 原始的`redux`
+
+  1. 创建 store 仓库
+
+  ```
+    import { createStore } from 'redux'
+    import reducer from './reducer'
+
+    const store = createStore(reducer)
+
+    export default store
+  ```
+
+  2. 创建 reducer 管理 store 中心
+
+  ```
+    import {
+      CHANGE_INPUT_VALUE,
+      ADD_TODO_ITEM,
+      DELETE_TODO_ITEM,
+    } from './actionTypes'
+
+    const defaultState = {
+      inputValue: "",
+      list: ["学习vue", "学习react"],
+    };
+
+    // reducer可以接受state，但是不能直接改变state，需要进行深拷贝
+    const reducer = (state = defaultState, action) => {
+      // console.log(action)
+      if (action.type === CHANGE_INPUT_VALUE) {
+        const newState = JSON.parse(JSON.stringify(state))
+        newState.inputValue = action.value
+        return newState
+      }
+      if (action.type === ADD_TODO_ITEM) {
+        const newState = JSON.parse(JSON.stringify(state))
+        if (newState.inputValue) {
+          newState.list.push(newState.inputValue)
+        }
+        newState.inputValue = ''
+        return newState
+      }
+      if (action.type === DELETE_TODO_ITEM) {
+        const newState = JSON.parse(JSON.stringify(state))
+        newState.list.splice(action.index, 1)
+        return newState
+      }
+      return state;
+    };
+
+    export default reducer
+  ```
+
+  3. 创建提交修改 store 的 action
+
+  ```
+    import axios from 'axios'
+    import {
+      CHANGE_INPUT_VALUE,
+      ADD_TODO_ITEM,
+      DELETE_TODO_ITEM,
+      INIT_LIST_ACTION,
+    } from './actionTypes'
+
+    const getChangeInputValue = (value) => ({
+      type: CHANGE_INPUT_VALUE,
+      value
+    })
+    const getAddTodoItem = (value) => ({
+      type: ADD_TODO_ITEM,
+      value
+    })
+    const getDeleteTodoItem = (value) => ({
+      type: DELETE_TODO_ITEM,
+      value
+    })
+    const initListAction = (value) => ({
+      type: INIT_LIST_ACTION,
+      value
+    })
+
+    // redux-thunk
+    const getTodoList = () => {
+      return (dispatch) => {
+        axios.get('../../json/todoList.json')
+        .then((res) => {
+          console.log(res)
+          const action = initListAction(res.data.list)
+          dispatch(action)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+      }
+    }
+
+    export {
+      getChangeInputValue,
+      getAddTodoItem,
+      getDeleteTodoItem,
+      initListAction,
+      getTodoList
+    }
+  ```
+
+  4. 获取 store 中的 state 数据及修改
+
+  ```
+    import React, { Component } from "react";
+    import "../assets/css/main.css";
+    import store from '../store'
+    import { getChangeInputValue, getAddTodoItem, getDeleteTodoItem, getTodoList } from '../store/creatActions'
+    import TodoListUI from './TodoListUI'
+
+    class TodoList extends Component {
+      constructor(props) {
+        super(props);
+        // 初次获取store数据
+        this.state = store.getState()
+        // `store.subscribe`j监听store数据变化手动更新重新获取store数据
+        store.subscribe(this.handleStoreChange.bind(this))
+      }
+      render() {
+        return ();
+      }
+      // 挂载完成
+      componentDidMount() {
+        /**
+        * redux-thunk(异步请求返回数据修改state)
+        */
+        const action = getTodoList()
+        store.dispatch(action)
+      handleInputChange(e) {
+        const action = getChangeInputValue(e.target.value)
+        store.dispatch(action)
+      }
+    }
+
+    export default TodoList;
+  ```
+
 - `redux-saga`
 
 - `redux-thunk`的用法
@@ -187,8 +329,11 @@
     export default connect(mapState, mapDispatch)(Login);
   ```
 
+### styled 样式
+
+- `/src/pages/login/style.js`
+
   ```
-  // `/src/pages/login/style.js`
   import styled from 'styled-components';
 
   export const LoginWrapper = styled.div`
@@ -231,3 +376,41 @@
     text-align: center;
   `;
   ```
+
+### 路由
+
+- App.js
+  ```
+  class App extends Component {
+    render() {
+      return (
+        <Provider store={store}>
+          <BrowserRouter>
+            <div>
+              <Header />
+              <Route path='/' exact component={Home}></Route>
+              <Route path='/login' exact component={Login}></Route>
+              <Route path='/write' exact component={Write}></Route>
+              <Route path='/detail/:id' exact component={Detail}></Route>
+            </div>
+          </BrowserRouter>
+        </Provider>
+      );
+    }
+  }
+  ```
+- 路由传参
+
+  1. 通过 params
+
+     > 在标签中传: `<Route path='/detail/:id' exact component={Detail}></Route>`;获取参数`this.props.match.params.id`
+
+     > js: this.props.history.push( '/sort/' + id )
+
+  2. 通过 query
+
+     > `<Link to={{ path : ' /sort ' , query : { name : 'sunny' }}}>`;
+
+     > `this.props.history.push({ path : '/sort' ,query : { name: ' sunny'} })`
+
+     > 取参数：`this.props.location.query.name`
