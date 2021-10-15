@@ -35,7 +35,8 @@
 
   ### useEffect
   - useEffect 就是一个 Effect Hook，给函数组件增加了操作副作用的能力。它跟 class 组件中的 componentDidMount、componentDidUpdate 
-  和 componentWillUnmount 具有相同的用途，只不过被合并成了一个 API
+  和 componentWillUnmount 具有相同的用途，只不过被合并成了一个 API，使用 useEffect 调度的 effect 不会阻塞浏览器更新屏幕。同时使得相关的
+  代码关联更加紧密
 
   ```
     // 相当于 componentDidMount 和 componentDidUpdate:
@@ -52,4 +53,13 @@
         ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);
       };
     });
+  ```
+
+  - 值发生变化时才重新生成effect，提高性能，如果数组中有多个元素，即使只有一个元素发生变化，React 也会执行 effect。
+  如果想执行只运行一次的 effect（仅在组件挂载和卸载时执行），可以传递一个空数组（[]）作为第二个参数。这就告诉 React 你的 effect 
+  不依赖于 props 或 state 中的任何值，所以它永远都不需要重复执行。
+  ```
+    useEffect(() => {
+      document.title = `You clicked ${count} times`;
+    }, [count]); // 仅在 count 更改时更新
   ```
