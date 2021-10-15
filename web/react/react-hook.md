@@ -5,11 +5,6 @@
 
   - Hook 不能在 class 组件中使用 —— 这使得你不使用 class 也能使用 React。
 
-## Hook 使用规则
-  - 只能在函数最外层调用 Hook。不要在循环、条件判断或者子函数中调用。
-
-  - 只能在 React 的函数组件中调用 Hook。不要在其他 JavaScript 函数中调用。
-
 ## useState
   - useState 会返回一对值：当前状态和一个让你更新它的函数，useState 唯一的参数就是初始 state，可以是数字，字符串，对象，布尔值等。
   ```
@@ -63,3 +58,11 @@
       document.title = `You clicked ${count} times`;
     }, [count]); // 仅在 count 更改时更新
   ```
+
+## Hook 使用规则
+  - 只能在函数最外层调用 Hook。不要在循环、条件判断或者子函数中调用。
+
+  - 只能在 React 的函数组件中调用 Hook。不要在其他 JavaScript 函数中调用。
+
+  - 只要 Hook 的调用顺序在多次渲染之间保持一致，React 就能正确地将内部 state 和对应的 Hook 进行关联
+  （在循环、条件判断或者子函数中调用顺序会发生改变）。
